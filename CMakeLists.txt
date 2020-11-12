@@ -9,7 +9,6 @@ include(InstallRequiredSystemLibraries)
 include(GNUInstallDirs)
 include(FetchContent)
 set(FETCHCONTENT_QUIET OFF)
-set(FETCHCONTENT_BASE_DIR "${CMAKE_SOURCE_DIR}/_dep" CACHE PATH "Directory into which dependencies are stored." FORCE)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
