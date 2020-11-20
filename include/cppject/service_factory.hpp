@@ -8,7 +8,7 @@
 
 #include <cppject/exception.hpp>
 
-namespace smarthome {
+namespace cppject {
 
     /**
      * Service class used for injection of concrete objects.

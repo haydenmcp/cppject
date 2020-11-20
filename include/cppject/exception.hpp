@@ -2,7 +2,7 @@
 #include <exception>
 #include <string>
 
-namespace smarthome {
+namespace cppject {
 
     /**
      * Thrown when an abstract interface is being fetched but hasn't had a concrete implementation registered with the service factory.
