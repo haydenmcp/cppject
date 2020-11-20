@@ -25,7 +25,7 @@ namespace cppject {
              * @return Shared pointer to the abstract base.
              */
             template <typename AbstractBase>
-            const std::shared_ptr<AbstractBase> Get() {
+            std::shared_ptr<AbstractBase> Get() {
 
                 if ( !_registered<AbstractBase>() )
                     throw ConcreteImplementationNotRegistered( _name<AbstractBase>() );
