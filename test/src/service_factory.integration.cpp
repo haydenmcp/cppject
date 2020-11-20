@@ -2,7 +2,7 @@
 
 #include <cppject/service_factory.hpp>
 
-using namespace smarthome;
+using namespace cppject;
 
 class AbstractBase {
     public:
