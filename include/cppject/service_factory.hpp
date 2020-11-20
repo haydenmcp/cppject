@@ -18,6 +18,8 @@ namespace cppject {
     class ServiceFactory {
         public:
 
+            using shared_ptr = std::shared_ptr<ServiceFactory>;
+
             /**
              * Get an instance of the specified service.
              *
