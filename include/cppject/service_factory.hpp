@@ -25,13 +25,15 @@ namespace cppject {
              * @return Shared pointer to the abstract base.
              */
             template <typename AbstractBase>
-            const AbstractBase& Get() {
+            const std::shared_ptr<AbstractBase> Get() {
 
                 if ( !_registered<AbstractBase>() )
                     throw ConcreteImplementationNotRegistered( _name<AbstractBase>() );
 
                 const auto generalizedConstructor = _constructors.at( _key<AbstractBase>() );
                 const auto constructor = std::any_cast< std::function<std::shared_ptr<AbstractBase>()> >(generalizedConstructor);
+
+                // TODO: Modify so that service factory stores object instances. This is necessary for in-depth testing.
                 return constructor();
             }
 
