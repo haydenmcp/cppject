@@ -1,4 +1,5 @@
 #include <gmock/gmock.h>
+#include <exception>
 
 #include <cppject/service_factory.hpp>
 
@@ -34,8 +35,8 @@ TEST(ServiceFactory, ShouldAllowUserToFetchAConcreteImplementationUsingTheAbstra
     auto serviceFactory = ServiceFactory::Instance();
     try {
         serviceFactory->Inject<ConcreteImpl, AbstractBase>();
-        auto concreteImplementation = serviceFactory->Get<AbstractBase>();
-    } catch(...) {
-        FAIL();
+        auto& concreteImplementation = serviceFactory->Get<AbstractBase>();
+    } catch(const std::exception& e) {
+        FAIL() << "Failed with exception: " << e.what();
     }
 }

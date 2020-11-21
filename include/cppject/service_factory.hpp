@@ -24,19 +24,12 @@ namespace cppject {
              * Get an instance of the specified service.
              *
              * @tparam AbstractBase Abstract base class for which an instance should be returned.
-             * @return Shared pointer to the abstract base.
+             * @return Instance of the concrete type.
              */
             template <typename AbstractBase>
-            std::shared_ptr<AbstractBase> Get() {
+            AbstractBase& Get() {
 
-                if ( !_registered<AbstractBase>() )
-                    throw ConcreteImplementationNotRegistered( _name<AbstractBase>() );
-
-                const auto generalizedConstructor = _constructors.at( _key<AbstractBase>() );
-                const auto constructor = std::any_cast< std::function<std::shared_ptr<AbstractBase>()> >(generalizedConstructor);
-
-                // TODO: Modify so that service factory stores object instances. This is necessary for in-depth testing.
-                return constructor();
+                return _instance<AbstractBase>();
             }
 
             /**
@@ -66,9 +59,9 @@ namespace cppject {
              */
             static std::shared_ptr<ServiceFactory> Instance() {
 
-                if (_instance == nullptr)
-                    _instance = std::shared_ptr<ServiceFactory>( new ServiceFactory() );
-                return _instance;
+                if (_factoryInstance == nullptr)
+                    _factoryInstance = std::shared_ptr<ServiceFactory>( new ServiceFactory() );
+                return _factoryInstance;
             }
 
         private:
@@ -112,6 +105,44 @@ namespace cppject {
             }
 
             /**
+             * Get the instance associated with an abstract base.
+             *
+             * @tparam AbstractBase Abstract base class for which registration will be checked.
+             * @return Instance of the specified type.
+             */
+            template <typename AbstractBase>
+            AbstractBase& _instance() {
+
+                if ( !_registered<AbstractBase>() )
+                    throw ConcreteImplementationNotRegistered( _name<AbstractBase>() );
+
+                const auto key = _key<AbstractBase>();
+                if (!_created<AbstractBase>()) {
+
+                    const auto generalizedConstructor = _constructors.at(key);
+                    const auto constructor = std::any_cast< std::function<std::shared_ptr<AbstractBase>()> >(generalizedConstructor);
+                    _instances.insert({key, constructor() });
+                }
+
+                auto generalizedInstance = _instances.at(key);
+                return *std::any_cast< std::shared_ptr<AbstractBase> >( generalizedInstance );
+            }
+
+            /**
+             * Check if a concrete implementation has already been created.
+             *
+             * @tparam AbstractBase Abstract base class for which registration will be checked.
+             * @return True if created. False otherwise.
+             */
+            template <typename AbstractBase>
+            const bool _created() {
+
+                const auto key = _key<AbstractBase>();
+                const auto found = _instances.find(key) != _instances.end();
+                return found;
+            }
+
+            /**
              * A data structure used to store functions that construct concrete instances.
              *
              * The use of std::any here allows abstraction of function signature differences so that objects of different types can be created.
@@ -119,9 +150,14 @@ namespace cppject {
             std::unordered_map<size_t, std::any> _constructors { };
 
             /**
+             * Stores the object instances.
+             */
+            std::unordered_map<size_t, std::any> _instances { };
+
+            /**
              * Singleton instance of the factory.
              */
-            inline static std::shared_ptr<ServiceFactory> _instance = nullptr;
+            inline static std::shared_ptr<ServiceFactory> _factoryInstance = nullptr;
     };
 
 } // namespace smarthome
